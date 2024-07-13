@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css"></link>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css"></link>
+  </head>
+  <body>
+    <div id="app" class="w-[960px] text-center mx-auto">
+      <h1 class="text-3xl mt-5">Agenda - MyContent 🚀</h1>
+
+      <!--Tabs navigation-->
+      <ul id="tabs" class="inline-flex w-full mt-5 px-1 pt-2 justify-center">
+        <li class="px-4 py-2 -mb-px font-semibold text-gray-800 border-b-2 border-blue-400 rounded-t opacity-50"><a id="default-tab" href="#list">Lista</a></li>
+        <li class="px-4 py-2 font-semibold text-gray-800 rounded-t opacity-50"><a href="#history">Historial</a></li>
+      </ul>
+
+      <!-- Tab Contents -->
+      <div id="tab-contents">
+        <!-- List tab -->
+        <div id="list" class="p-4">
+          <div class="mt-5 flex flex-col max-w-[960px] mx-auto">
+            <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div class="inline-block min-w-[640px] mx-auto py-2 sm:px-6 lg:px-8">
+                <div class="overflow-hidden">
+                  <table
+                    id="leads-table"
+                    class="display"
+                    style="width:100%;">
+                    <thead
+                      class="border-b border-neutral-200 font-medium">
+                      <tr>
+                        <th scope="col" class="px-6 py-4">Lead</th>
+                        <th scope="col" class="px-6 py-4">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History tab -->
+        <div id="history" class="hidden p-4">
+          <div class="mt-5 flex flex-col max-w-[960px] mx-auto">
+            <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div class="inline-block min-w-[640px] mx-auto py-2 sm:px-6 lg:px-8">
+                <div class="overflow-hidden">
+                  <table
+                    id="history-table"
+                    class="display"
+                    style="width:100%;">
+                    <thead
+                      class="border-b border-neutral-200 font-medium">
+                      <tr>
+                        <th scope="col" class="px-6 py-4">Lead</th>
+                        <th scope="col" class="px-6 py-4">Estado</th>
+                        <th scope="col" class="px-6 py-4">Fecha Hora</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <div id="listaLoader">
+          <p class="mt-5 text-center">
+            Cargando lista...
+          </p>
+      </div>
+    </div>
+
+    <?!= include('UpdateStatusModal'); ?>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    
+    <?!= include('InitUi.js'); ?>
+
+    <?!= include('Actions.js'); ?>
+  </body>
+</html>

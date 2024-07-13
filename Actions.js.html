@@ -1,0 +1,53 @@
+
+<script>
+  $('body').on('click', '.edit-status', function() {
+    var row = $(this).data('row');
+    var lead = $(this).data('lead');
+    $('#lead').val(lead);
+    $('#lead').data('key', row);
+    openModal();
+  });
+
+  $('#statusForm').submit(function (e) {
+    e.preventDefault();
+
+    $('#sendingFormLoader').show();
+    $('#status').prop('disabled', true);
+    $('#submitButton').prop('disabled', true);
+
+    var lead = $('#lead').data('key');
+    var status = $('#status').val();
+    console.log(lead, status);
+    
+    google.script.run.withSuccessHandler((history) => {
+      emptyForm();
+      
+      $(`#leads-table tbody tr[data-key="${lead}"]`)
+        .find('td:last-child span.content')
+        .text(status);
+
+      $('#update-status-modal').hide();
+      
+      loadHistoryTable([history]);
+    })
+      .updateStatuses(lead, status);
+  });
+
+  $('#modalButton').click(openModal);
+
+  $('#closeModalButton').click(function () {
+    $('#update-status-modal').hide();
+  });
+
+  function emptyForm() {
+    $('#leads').val('').prop('disabled', false).trigger('chosen:updated');;
+    $('#status').val('').prop('disabled', false).trigger('chosen:updated');
+    $('#submitButton').prop('disabled', false);
+    $('#sendingFormLoader').hide();
+  }
+
+  function openModal() {
+    $('#update-status-modal').show();
+    $('.chosen').chosen({no_results_text: "Oops, no se encontraron datos!"});
+  }
+</script>

@@ -1,0 +1,76 @@
+<div id="update-status-modal" class="relative hidden z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+  <div class="fixed inset-0 z-10 w-screen overflow-y-scroll">
+    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+      <div class="min-h-[400px] pt-5 relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+        <button
+          id="closeModalButton"
+          type="button"
+          class="float-right mr-3 mt-3 box-content rounded-none border-none text-neutral-500 hover:text-neutral-800 hover:no-underline focus:text-neutral-800 focus:opacity-100 focus:shadow-none focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300"
+          aria-label="Close">
+          <span class="[&>svg]:h-6 [&>svg]:w-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </span>
+        </button>
+
+        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+          <div class="flex items-center justify-center p-6">
+            <div class="mx-auto w-full max-w-[550px] bg-white">
+              <form id="statusForm" class="z-50">
+                <div class="mb-5">
+                  <label for="name" class="mb-3 block text-base font-medium text-[#07074D]">
+                      Lead:
+                  </label>
+                  <input
+                    type="text"
+                    class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    id="lead"
+                    placeholder="Lead"
+                    data-key=""
+                    readonly=""
+                    value="" />
+                </div>
+                <div class="mb-5">
+                  <label for="phone" class="mb-3 block text-base font-medium text-[#07074D]">
+                      Estado
+                  </label>
+                  <select id="status" data-placeholder="Elija un estado" class="chosen w-full form-input">
+                    <option value=""></option>
+                  </select>
+                </div>
+                <div class="flex-col">
+                  <button
+                    id="submitButton"
+                    type="submit"
+                    class="hover:shadow-form w-full rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none mt-5 disabled:opacity-75 disabled:cursor-not-allowed">
+                      Actualizar
+                  </button>
+
+                  <div id="sendingFormLoader">
+                  </div>
+                </div>
+              </form>
+
+              <div id="mainLoader">
+                <p class="mt-5 text-center">
+                  Cargando el formulario...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,149 @@
+<script>
+  var statusHistory = [];
+  var loader = $('<div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animad[spin_1.5s_linear_infinite]" role="status"></div>');
+  var datatableOptions = {
+    order: [],
+    language: {
+      url: '//cdn.datatables.net/plug-ins/2.0.8/i18n/es-MX.json',
+    },
+  };
+
+  $('#mainLoader').prepend(loader.clone().addClass('mt-12'));
+  $('#listaLoader').prepend(loader.clone().addClass('mt-12'));
+  $('#sendingFormLoader').prepend(
+    loader.clone()
+      .removeClass('h-8 w-8 border-4')
+      .addClass('mt-3 h-6 w-6 border-2')
+  );
+
+  function initUi() {
+    $('#statusForm').hide();
+    $('#mainLoader').show();
+    $('#listaLoader').show();
+    $('#modalButton').prop('disabled', true);
+
+    $('#sendingFormLoader').hide();
+    $('#submitButton').prop('disabled', true);
+
+    // Enable button if a new status is selected
+    $('.form-input').on('change', function () {
+      $('#submitButton').prop('disabled', !$('#status').val());
+    });
+  }
+
+  function loadLeads(leads) {
+    loadLeadsTable(leads);
+    loadSelectors(leads);
+  }
+
+  function loadLeadsTable(leads) {
+    leads.forEach(function(lead, index) {
+      const status = lead.status == '' ? 'Sin asignar' : lead.status;
+      const row = $(
+        `<tr data-key="${lead.value}" class="border-b border-neutral-200 ${index % 2 == 0 ? 'bg-white' : 'bg-black/[0.02] '}">
+          <td class="whitespace-nowrap px-6 py-4">${lead.text}</td>
+          <td class="whitespace-nowrap px-6 py-4 ">
+            <span class="content">${status}</span>
+            <span
+              class="edit-status cursor-pointer"
+              data-row="${lead.value}"
+              data-lead="${lead.text}"
+              alt="Editar estado"
+              title="Editar estado">
+              📝
+            </span> 
+          </td>
+        </tr>`
+      );
+
+      $('#leads-table tbody').append(row);
+    });
+
+    $('#modalButton').prop('disabled', false);
+
+    new DataTable('#leads-table', datatableOptions);
+  }
+
+  function loadSelectors(leads) {
+    $('#statusForm').show();
+    $('#mainLoader').hide();
+    $('#listaLoader').hide();
+    
+    var statusOptions = [
+      'Contactado',
+      'Esperando respuesta',
+      'En llamada',
+      'Win',
+      'Lose',
+    ];
+
+    statusOptions.forEach(function (option) {
+      $('#status').append($('<option>', { 
+          value: option,
+          text : option,
+      }));
+    });
+  }
+
+  function loadHistoryTable(logs) {
+    statusHistory = logs;
+    logs.forEach(function(log, index) {
+      const row = $(
+        `<tr class="border-b border-neutral-200 ${index % 2 == 0 ? 'bg-white' : 'bg-black/[0.02]'}">
+          <td class="whitespace-nowrap px-6 py-4">${log.lead}</td>
+          <td class="whitespace-nowrap px-6 py-4 ">
+            <span class="content">${log.status}</span>
+          </td>
+          <td class="whitespace-nowrap px-6 py-4">${log.date}</td>
+        </tr>`
+      );
+
+      $('#history-table tbody').append(row);
+    });
+
+    if (! DataTable.isDataTable('#history-table')) {
+      new DataTable('#history-table', datatableOptions);
+    }
+
+    $('#listaLoader').hide();
+  }
+
+  // Tabs switcher
+  var tabsContainer = document.querySelector("#tabs");
+  var tabTogglers = tabsContainer.querySelectorAll("a");
+
+  tabTogglers.forEach(function(toggler) {
+    toggler.addEventListener("click", function(e) {
+      e.preventDefault();
+
+      var tabName = this.getAttribute("href");
+      var tabContents = document.querySelector("#tab-contents");
+
+      for (var i = 0; i < tabContents.children.length; i++) {
+        tabTogglers[i].parentElement.classList.remove("border-blue-400", "border-b",  "-mb-px", "opacity-100");  tabContents.children[i].classList.remove("hidden");
+        if ("#" + tabContents.children[i].id === tabName) {
+          continue;
+        }
+
+        tabContents.children[i].classList.add("hidden");
+      }
+
+      e.target.parentElement.classList.add("border-blue-400", "border-b-4", "-mb-px", "opacity-100");
+
+      if (tabName === '#history' && statusHistory.length <= 0) {
+        $('#listaLoader').show();
+        google.script.run.withSuccessHandler(loadHistoryTable)
+          .getHistory();
+      }
+    });
+  });
+
+  document.getElementById("default-tab").click();
+
+  window.onload = function() {
+    google.script.run.withSuccessHandler(loadLeads)
+      .getLeads();
+  }
+
+  initUi();
+</script>
