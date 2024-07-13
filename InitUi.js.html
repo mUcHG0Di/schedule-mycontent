@@ -41,7 +41,14 @@
       const status = lead.status == '' ? 'Sin asignar' : lead.status;
       const row = $(
         `<tr data-key="${lead.value}" class="border-b border-neutral-200 ${index % 2 == 0 ? 'bg-white' : 'bg-black/[0.02] '}">
+          <td class="whitespace-nowrap px-6 py-4 ">${lead.scheduled}</td>
           <td class="whitespace-nowrap px-6 py-4">${lead.text}</td>
+          <td class="whitespace-nowrap px-6 py-4">${lead.source}</td>
+          <td class="whitespace-nowrap px-6 py-4">${lead.campaign}</td>
+          <td class="whitespace-nowrap px-6 py-4">${lead.medium}</td>
+          <td class="whitespace-nowrap px-6 py-4">${lead.term}</td>
+          <td class="whitespace-nowrap px-6 py-4">${lead.content}</td>
+          <td class="whitespace-nowrap px-6 py-4">${lead.closer}</td>
           <td class="whitespace-nowrap px-6 py-4 ">
             <span class="content">${status}</span>
             <span

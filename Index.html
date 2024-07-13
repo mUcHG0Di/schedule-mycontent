@@ -5,9 +5,11 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css"></link>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css"></link>
+
+    <title>Agenda - MyContent</title>
   </head>
   <body>
-    <div id="app" class="w-[960px] text-center mx-auto">
+    <div id="app" class="w-full text-center mx-auto">
       <h1 class="text-3xl mt-5">Agenda - MyContent 🚀</h1>
 
       <!--Tabs navigation-->
@@ -20,8 +22,8 @@
       <div id="tab-contents">
         <!-- List tab -->
         <div id="list" class="p-4">
-          <div class="mt-5 flex flex-col max-w-[960px] mx-auto">
-            <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div class="mt-5 flex flex-col max-w-full mx-auto">
+            <div class="overflow-x-auto sm:-mx-6 lg:mx-6">
               <div class="inline-block min-w-[640px] mx-auto py-2 sm:px-6 lg:px-8">
                 <div class="overflow-hidden">
                   <table
@@ -31,7 +33,14 @@
                     <thead
                       class="border-b border-neutral-200 font-medium">
                       <tr>
-                        <th scope="col" class="px-6 py-4">Lead</th>
+                        <th scope="col" class="px-6 py-4">Agendación</th>
+                        <th scope="col" class="px-6 py-4">Email</th>
+                        <th scope="col" class="px-6 py-4">UTM Source</th>
+                        <th scope="col" class="px-6 py-4">UTM Campaign</th>
+                        <th scope="col" class="px-6 py-4">UTM Medium</th>
+                        <th scope="col" class="px-6 py-4">UTM Term</th>
+                        <th scope="col" class="px-6 py-4">UTM Content</th>
+                        <th scope="col" class="px-6 py-4">Closer</th>
                         <th scope="col" class="px-6 py-4">Estado</th>
                       </tr>
                     </thead>
@@ -48,7 +57,7 @@
         <div id="history" class="hidden p-4">
           <div class="mt-5 flex flex-col max-w-[960px] mx-auto">
             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div class="inline-block min-w-[640px] mx-auto py-2 sm:px-6 lg:px-8">
+              <div class="inline-block min-w-[960px] mx-auto py-2 sm:px-6 lg:px-8">
                 <div class="overflow-hidden">
                   <table
                     id="history-table"
@@ -57,7 +66,7 @@
                     <thead
                       class="border-b border-neutral-200 font-medium">
                       <tr>
-                        <th scope="col" class="px-6 py-4">Lead</th>
+                        <th scope="col" class="px-6 py-4">Email</th>
                         <th scope="col" class="px-6 py-4">Estado</th>
                         <th scope="col" class="px-6 py-4">Fecha Hora</th>
                       </tr>
@@ -75,7 +84,8 @@
 
       <div id="listaLoader">
           <p class="mt-5 text-center">
-            Cargando lista...
+            Cargando lista.<br>
+            Esto puede demorar unos segundos...
           </p>
       </div>
     </div>

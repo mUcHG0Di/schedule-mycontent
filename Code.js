@@ -67,8 +67,15 @@ function getLeads() {
     }
 
     leads.push({
-      text: row[1],
       value: index + 2, // Excel row number
+      scheduled: row[0].toLocaleString(),
+      text: row[1],
+      source: row[2],
+      campaign: row[3],
+      medium: row[4],
+      term: row[5],
+      content: row[6],
+      closer: row[7],
       status: row[8],
     });
   });
@@ -95,8 +102,6 @@ function getHistory() {
       date: row[2].toLocaleString(),
     });
   });
-
-  console.log(history);
 
   return history;
 }
