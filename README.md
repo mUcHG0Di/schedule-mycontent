@@ -5,9 +5,9 @@ Google App Script project to list and update status of an Schedule Spreadsheet
 This project provides a user-friendly interface for the sales team (closers) to update the status of their call schedules, which are recorded in a Google Sheets document. The interface is built using Google Apps Script, jQuery, and TailwindCSS.
 
 ## Features
-1. Custom menu for status updates
+1. Web page to list the schedule in a datatable
 2. Pop-up form for selecting the status
-3. Change log recorded in a separate sheet
+3. Change log recorded in a separate sheet/tab
 
 ## Technology Stack
 - Google Apps Script
