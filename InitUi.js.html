@@ -93,7 +93,13 @@
   }
 
   function loadHistoryTable(logs) {
-    statusHistory = logs;
+    if (statusHistory.length == 0) {
+      // Remove empty state row
+      $('#history-table tbody tr').remove();
+    }
+
+    statusHistory = statusHistory.length == 0 ? logs : statusHistory + logs;
+
     logs.forEach(function(log, index) {
       const row = $(
         `<tr class="border-b border-neutral-200 ${index % 2 == 0 ? 'bg-white' : 'bg-black/[0.02]'}">
