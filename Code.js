@@ -68,15 +68,7 @@ function getLeads() {
 
     leads.push({
       value: index + 2, // Excel row number
-      scheduled: row[0].toLocaleString(),
-      text: row[1],
-      source: row[2],
-      campaign: row[3],
-      medium: row[4],
-      term: row[5],
-      content: row[6],
-      closer: row[7],
-      status: row[8],
+      ...rowToObject(row)
     });
   });
 
@@ -123,6 +115,12 @@ function updateStatuses(lead, status) {
 
   mainSheet.getRange(lead, lastColumn)
     .setValue(status);
+
+  if (status == 'Win') {
+    // Send webhook to Make
+    var row = mainSheet.getRange(lead, 1, 1, lastColumn);
+    sendWinWebhook(row.getValues()[0]);
+  }
   
   return saveHistory(lead, status);
 }
@@ -143,6 +141,34 @@ function saveHistory(lead, status) {
     status,
     date: date.toLocaleString(),
   }
+}
+
+function sendWinWebhook(row) {
+  var url = "https://hook.us1.make.com/o4hwrzsu4nh770tjz1qa5bwjli9ioh1z";
+  var options = {
+    "method": "post",
+    "payload": rowToObject(row),
+  }
+
+  var response = UrlFetchApp.fetch(url, options);
+
+  if (response.getResponseCode() !== 200) {
+    console.log('Error sending email webhook to make');
+  }
+}
+
+function rowToObject(row) {
+  return {
+    agendacion: row[0].toLocaleString(),
+    email: row[1],
+    utm_source: row[2],
+    utm_campaign: row[3],
+    utm_medium: row[4],
+    utm_term: row[5],
+    utm_content: row[6],
+    closer: row[7],
+    estado: row[8],
+  };
 }
 
 addStatusColumn();
