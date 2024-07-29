@@ -1,52 +1,97 @@
-
 <script>
-  $('body').on('click', '.edit-status', function() {
-    var row = $(this).data('row');
-    var lead = $(this).data('lead');
-    $('#lead').val(lead);
-    $('#lead').data('key', row);
-    openModal();
-  });
+  function markItem(detailDiv) {
+      if (selectedLead?.value == detailDiv.data('key')) {
+          selectedLead = {};
+          removeDataInDetailView();
+          $('.dropdown-options').hide()
+          return;
+      }
 
-  $('#statusForm').submit(function (e) {
-    e.preventDefault();
+      $('.dropdown-button').prop('disabled', false);
+      $('#rowId').val(detailDiv.data('key'));
+      selectedLead = _(leads).find((lead) => lead.value == detailDiv.data('key'));
+  }
+  
+  function loadDataInDetailView() {
+      $('#lead-name').html(selectedLead.email)
+      $('#closer-icon').show().html(Array.from(`${selectedLead.closer}`)[0].toUpperCase());
+      $('#closer-name').html(selectedLead.closer);
+      $('#schedule-date').html(selectedLead.agendacion?.toLocaleString());
 
-    $('#sendingFormLoader').show();
-    $('#status').prop('disabled', true);
-    $('#submitButton').prop('disabled', true);
+      const statusSelected = $(`[data-key="${selectedLead.estado}"].dropdown-option`).clone();
+      $("#dropdown-status .selected-dropdown").html(statusSelected)
+      statusSelected.addClass('py-1').removeClass('py-0.5 hover:bg-[#ebebeb]');;
+      $('#dropdown-status .selected-dropdown-text').html(selectedLead.estado);
 
-    var lead = $('#lead').data('key');
-    var status = $('#status').val();
-    
-    google.script.run.withSuccessHandler((history) => {
-      emptyForm();
-      
-      $(`#leads-table tbody tr[data-key="${lead}"]`)
-        .find('td:last-child span.content')
-        .text(status);
-
-      $('#update-status-modal').hide();
-      
-      loadHistoryTable([history]);
-    })
-      .updateStatuses(lead, status);
-  });
-
-  $('#modalButton').click(openModal);
-
-  $('#closeModalButton').click(function () {
-    $('#update-status-modal').hide();
-  });
-
-  function emptyForm() {
-    $('#leads').val('').prop('disabled', false).trigger('chosen:updated');;
-    $('#status').val('').prop('disabled', false).trigger('chosen:updated');
-    $('#submitButton').prop('disabled', false);
-    $('#sendingFormLoader').hide();
+      const llamadaSelected = $(`[data-key="${selectedLead.llamada_realizada || 'No'}"].dropdown-option`).clone();
+      $("#dropdown-llamada .selected-dropdown").html(llamadaSelected)
+      llamadaSelected.addClass('py-1').removeClass('py-0.5 hover:bg-[#ebebeb]');;
+      $('#dropdown-llamada .selected-dropdown-text').html(selectedLead.llamada_realizada);
   }
 
-  function openModal() {
-    $('#update-status-modal').show();
-    $('.chosen').chosen({no_results_text: "Oops, no se encontraron datos!"});
-  }
+  $('.dropdown-button').click(function() {
+    $(this).siblings('.dropdown-options').toggle();
+  });
+
+  $('#search-input').keyup(function () {
+      const searchInput = $(this);
+
+      $('#agendaciones details').each((index, detail) => {
+          const detailElement = $(detail);
+          const h2s = detailElement.find('h2');
+
+          h2s.each((i, el) => {
+              const h2Text = $(el).text().toLowerCase();
+              const found = h2Text.indexOf(searchInput.val().toLowerCase()) !== -1;
+
+              found
+                  ? $(el).parent().removeClass('hidden')
+                  : $(el).parent().addClass('hidden')
+
+              if (found) {
+                  detailElement.attr('open', 'open');
+              }
+          });
+
+          detailElement.find('div.agenda-item:not(.hidden)').length == 0
+              ? detailElement.addClass('hidden')
+              : detailElement.removeClass('hidden');
+      });
+
+      if (searchInput.val() == '') {
+          $('#agendaciones details').each((index, detail) => {
+              detail.open = false;
+          })
+      }
+  })
+
+  $('.dropdown-option').click(function () {
+      if (! selectedLead) {
+        return;
+      }
+
+      const selectedOption = $(this)
+      selectedOption.parent().toggle();
+
+      const selectedOptionElement = selectedOption.clone();
+      const column = selectedOption.data('column');
+      const value = selectedOption.data('key');
+      const leadIndex = $('#rowId').val();
+
+      selectedLead[_.snakeCase(column)] = value;
+      
+      google.script.run.withSuccessHandler(function () {
+          if (column == 'Estado') {
+            $(`[data-key="${leadIndex}"].agenda-item .status-container`).html(selectedOptionElement.clone());
+          }
+
+          $('#sendingFormLoader').hide();
+        })
+          .updateValue(leadIndex, column, value);
+
+      $('#sendingFormLoader').show();
+
+      selectedOption.parent().siblings('button').find('.selected-dropdown').html(selectedOptionElement);
+      selectedOptionElement.addClass('py-1').removeClass('py-0.5 hover:bg-[#ebebeb]');
+  });
 </script>

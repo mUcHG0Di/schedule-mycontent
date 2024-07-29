@@ -1,14 +1,6 @@
 <script>
-  var statusHistory = [];
   var loader = $('<div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animad[spin_1.5s_linear_infinite]" role="status"></div>');
-  var datatableOptions = {
-    order: [],
-    language: {
-      url: '//cdn.datatables.net/plug-ins/2.0.8/i18n/es-MX.json',
-    },
-  };
 
-  $('#mainLoader').prepend(loader.clone().addClass('mt-12'));
   $('#listaLoader').prepend(loader.clone().addClass('mt-12'));
   $('#sendingFormLoader').prepend(
     loader.clone()
@@ -16,147 +8,113 @@
       .addClass('mt-3 h-6 w-6 border-2')
   );
 
-  function initUi() {
-    $('#statusForm').hide();
-    $('#mainLoader').show();
-    $('#listaLoader').show();
-    $('#modalButton').prop('disabled', true);
+  let selectedLead = {};
+  let leads = [];
+  let agendaciones = [];
+  const statusColores = {
+      'Contactado': 'bg-[#bfd6bd]',
+      'Esperando respuesta': 'bg-[#a49ccc]',
+      'En llamada': 'bg-[#b7bbca]',
+      'Win': 'bg-[#8c5921]',
+      'Lose': 'bg-[#98431b]',
+  };
 
-    $('#sendingFormLoader').hide();
-    $('#submitButton').prop('disabled', true);
-
-    // Enable button if a new status is selected
-    $('.form-input').on('change', function () {
-      $('#submitButton').prop('disabled', !$('#status').val());
-    });
-  }
-
-  function loadLeads(leads) {
-    loadLeadsTable(leads);
-    loadSelectors(leads);
-  }
-
-  function loadLeadsTable(leads) {
-    leads.forEach(function(lead, index) {
-      const status = lead.status == '' ? 'Sin asignar' : lead.status;
-      const row = $(
-        `<tr data-key="${lead.value}" class="border-b border-neutral-200 ${index % 2 == 0 ? 'bg-white' : 'bg-black/[0.02] '}">
-          <td class="whitespace-nowrap px-6 py-4 ">${lead.scheduled}</td>
-          <td class="whitespace-nowrap px-6 py-4">${lead.text}</td>
-          <td class="whitespace-nowrap px-6 py-4">${lead.source}</td>
-          <td class="whitespace-nowrap px-6 py-4">${lead.campaign}</td>
-          <td class="whitespace-nowrap px-6 py-4">${lead.medium}</td>
-          <td class="whitespace-nowrap px-6 py-4">${lead.term}</td>
-          <td class="whitespace-nowrap px-6 py-4">${lead.content}</td>
-          <td class="whitespace-nowrap px-6 py-4">${lead.closer}</td>
-          <td class="whitespace-nowrap px-6 py-4 ">
-            <span class="content">${status}</span>
-            <span
-              class="edit-status cursor-pointer"
-              data-row="${lead.value}"
-              data-lead="${lead.text}"
-              alt="Editar estado"
-              title="Editar estado">
-              📝
-            </span> 
-          </td>
-        </tr>`
-      );
-
-      $('#leads-table tbody').append(row);
-    });
-
-    $('#modalButton').prop('disabled', false);
-
-    new DataTable('#leads-table', datatableOptions);
-  }
-
-  function loadSelectors(leads) {
-    $('#statusForm').show();
-    $('#mainLoader').hide();
-    $('#listaLoader').hide();
-    
-    var statusOptions = [
-      'Contactado',
-      'Esperando respuesta',
-      'En llamada',
-      'Win',
-      'Lose',
-    ];
-
-    statusOptions.forEach(function (option) {
-      $('#status').append($('<option>', { 
-          value: option,
-          text : option,
-      }));
-    });
-  }
-
-  function loadHistoryTable(logs) {
-    if (statusHistory.length == 0) {
-      // Remove empty state row
-      $('#history-table tbody tr').remove();
-    }
-
-    statusHistory = statusHistory.length == 0 ? logs : statusHistory + logs;
-
-    logs.forEach(function(log, index) {
-      const row = $(
-        `<tr class="border-b border-neutral-200 ${index % 2 == 0 ? 'bg-white' : 'bg-black/[0.02]'}">
-          <td class="whitespace-nowrap px-6 py-4">${log.lead}</td>
-          <td class="whitespace-nowrap px-6 py-4 ">
-            <span class="content">${log.status}</span>
-          </td>
-          <td class="whitespace-nowrap px-6 py-4">${log.date}</td>
-        </tr>`
-      );
-
-      $('#history-table tbody').append(row);
-    });
-
-    if (! DataTable.isDataTable('#history-table')) {
-      new DataTable('#history-table', datatableOptions);
-    }
-
-    $('#listaLoader').hide();
-  }
-
-  // Tabs switcher
-  var tabsContainer = document.querySelector("#tabs");
-  var tabTogglers = tabsContainer.querySelectorAll("a");
-
-  tabTogglers.forEach(function(toggler) {
-    toggler.addEventListener("click", function(e) {
-      e.preventDefault();
-
-      var tabName = this.getAttribute("href");
-      var tabContents = document.querySelector("#tab-contents");
-
-      for (var i = 0; i < tabContents.children.length; i++) {
-        tabTogglers[i].parentElement.classList.remove("border-blue-400", "border-b",  "-mb-px", "opacity-100");  tabContents.children[i].classList.remove("hidden");
-        if ("#" + tabContents.children[i].id === tabName) {
-          continue;
-        }
-
-        tabContents.children[i].classList.add("hidden");
-      }
-
-      e.target.parentElement.classList.add("border-blue-400", "border-b-4", "-mb-px", "opacity-100");
-
-      if (tabName === '#history' && statusHistory.length <= 0) {
-        $('#listaLoader').show();
-        google.script.run.withSuccessHandler(loadHistoryTable)
-          .getHistory();
-      }
-    });
+  Object.keys(statusColores).forEach((status) => {
+      $('#dropdown-status .dropdown-options').append($(`
+          <div class="dropdown-option status-option cursor-pointer hover:bg-[#ebebeb]" data-column="Estado" data-key="${status}">
+              <div class="relative grid select-none items-center whitespace-nowrap rounded-full ${statusColores[status]} py-0.5 px-3 m-1 w-max font-bold text-white">
+                  <span>${status}</span>
+              </div>
+          </div>
+      `));
   });
 
-  document.getElementById("default-tab").click();
+  function removeDataInDetailView() {
+      $('#lead-name').html('Seleccione un Lead');
+      $('#rowId').val('');
+      $('#closer-icon').hide('fast');
+      $('#closer-name').html('&nbsp;');
+      $('#schedule-date').html('&nbsp;');
+      $('.dropdown-button').prop('disabled', true);
+
+      $("#dropdown-status .selected-dropdown").html('');
+      $('#dropdown-status .selected-dropdown-text').html('&nbsp;');
+
+      $("#dropdown-llamada .selected-dropdown").html('')
+      $('#dropdown-llamada .selected-dropdown-text').html('&nbsp;');
+  }
+
+  function parseDate(input, format) {
+    format = (format || 'yyyy-mm-dd').toLowerCase(); // default format
+    var parts = input.match(/(\d+)/g), 
+    i = 0, fmt = {};
+    // extract date-part indexes from the format
+    format.replace(/(yyyy|dd|mm)/g, function(part) { fmt[part] = i++; });
+    return new Date([parts[fmt['yyyy']], parts[fmt['mm']], parts[fmt['dd']]].filter(x => x !== undefined).join('-'));
+  }
+
+  function loadLeads(res) {
+    leads = _(res).map(item => ({
+        ...item,
+        agendacion: parseDate(item.agendacion, 'dd/MM/yyyy').toLocaleDateString('es-ES')
+    }));
+
+    agendaciones = _(leads).groupBy(item => item.agendacion).value();
+
+    Object.keys(agendaciones).forEach(function (date) {
+      var agendacionDiv = $(`
+        <details class="group mb-3">
+            <summary
+                class="flex bg-[#e0e0e088] -ml-3 shadow-md px-1 z-10 cursor-pointer list-none items-center py-1 text-xs font-regular text-secondary-900 group-open:text-primary-500">
+                <div class="mx-3">
+                    <svg class="w-5 h-5 mt-px ml-2 block group-open:hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <svg class="w-5 h-5 mt-px ml-2 rotate-180 hidden group-open:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <span><strong>Fecha de agendación:</strong> ${date} - <span class="italic">(${agendaciones[date].length})</span></span>
+            </summary>
+        </details>
+      `);
+
+      $('#agendaciones').append(agendacionDiv);
+
+      agendaciones[date].forEach(function (agendaInDate) {
+          var row = $(`
+              <div data-key="${agendaInDate.value}" tabindex="0" class="agenda-item bg-white focus:bg-black/[0.05] grid grid-cols-1 gap-1 place-content-evenly h-24 bg-white py-1 my-2 ml-3 -z-10 text-secondary-500 text-xs border-l-4 border-orange-500 px-3 cursor-pointer">
+                  <h2 class="font-bold">${agendaInDate.email}</h2>
+                  <span>${agendaInDate.agendacion}</span>
+                  <div class="status-container">
+                    <div class="relative grid select-none items-center whitespace-nowrap rounded-full ${statusColores[agendaInDate.estado]} py-1 px-3 w-max min-w-[30%] font-bold ${!! agendaInDate.estado ? 'text-white' : 'text-black'}">
+                        <span class="agendacion-text">${agendaInDate.estado || 'Estado sin asignar'}</span>
+                    </div>
+                  </div>
+              </div>
+          `);
+
+          agendacionDiv.append(row);
+      });
+
+      $('#listaLoader').hide();
+      $('#extra-message').hide();
+    });
+
+    $('.agenda-item').click(function () {
+        markItem($(this));
+
+        loadDataInDetailView();
+    });
+  }
 
   window.onload = function() {
+    removeDataInDetailView();
+    $('.dropdown-options').toggle();
+    $('#sendingFormLoader').hide();
+    $('#listaLoader').show();
+
     google.script.run.withSuccessHandler(loadLeads)
       .getLeads();
   }
-
-  initUi();
 </script>

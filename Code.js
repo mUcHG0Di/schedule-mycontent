@@ -7,7 +7,7 @@ function addStatusColumn() {
   var lastColumn = dataRange.getLastColumn();
 
   var columnName = 'Estado';
-  var columnExists = mainSheet.getRange(1, lastColumn).getDisplayValue() === columnName;
+  var columnExists = mainSheet.getRange(1, lastColumn - 1).getDisplayValue() === columnName;
 
   if (columnExists) {
     return;
@@ -109,20 +109,21 @@ function include(filename) {
       .getContent();
 }
 
-function updateStatuses(lead, status) {
-  var dataRange = mainSheet.getDataRange();
-  var lastColumn = dataRange.getLastColumn();
+function updateValue(lead, column, value) {
+  const columnIndex = mainSheet.getRange('1:1').getValues()[0].indexOf(column) + 1;
 
-  mainSheet.getRange(lead, lastColumn)
-    .setValue(status);
+  mainSheet.getRange(lead, columnIndex)
+    .setValue(value);
 
-  if (status == 'Win') {
+  if (column == 'Estado' && value == 'Win') {
     // Send webhook to Make
-    var row = mainSheet.getRange(lead, 1, 1, lastColumn);
+    var row = mainSheet.getRange(lead, 1, 1, mainSheet.getLastColumn());
     sendWinWebhook(row.getValues()[0]);
   }
   
-  return saveHistory(lead, status);
+  return column == 'Estado'
+    ? saveHistory(lead, value)
+    : null;
 }
 
 function saveHistory(lead, status) {
@@ -168,6 +169,7 @@ function rowToObject(row) {
     utm_content: row[6],
     closer: row[7],
     estado: row[8],
+    llamada_realizada: row[9],
   };
 }
 

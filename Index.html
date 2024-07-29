@@ -1,104 +1,153 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
+    <head>
+        <base target="_top">
+    </head>
+    <body class="bg-[#e0e0e088]">
+        <div id="app" class="md:container mx-auto bg-white rounded-lg shadow-lg my-5 h-[95vh]">
+            <div class="grid grid-cols-6 h-[95vh]">
+                <div id="master-view" class="max-w-[480px] p-3 border-r-2 overflow-y-scroll h-full max-h-100 col-span-2">
+                    <h2 class="text-xl font-bold">Closer View</h2>
+                    
+                    <!-- Search input -->
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </div>
+                        <input type="search" id="search-input" class="block w-full ps-10 py-1 mt-3 ml-1 text-sm text-gray-900 border-none border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search" autocomplete="off" />
+                    </div>
+                    
+                    <div class="mx-auto max-w-lg mt-5">
+                      <div id="listaLoader">
+                          <p class="mt-5 text-center">
+                            Cargando lista.<br>
+                            <span id="extra-message">Esto puede demorar unos segundos...</span>
+                          </p>
+                      </div>
+                        <div id="agendaciones" class="divide-y divide-gray-100 overflow-y-scroll max-h-100 w-[110%] -ml-3">
+                        </div>
+                    </div>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css"></link>
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css"></link>
-
-    <title>Agenda - MyContent</title>
-  </head>
-  <body>
-    <div id="app" class="w-full text-center mx-auto">
-      <h1 class="text-3xl mt-5">Agenda - MyContent 🚀</h1>
-
-      <!--Tabs navigation-->
-      <ul id="tabs" class="inline-flex w-full mt-5 px-1 pt-2 justify-center">
-        <li class="px-4 py-2 -mb-px font-semibold text-gray-800 border-b-2 border-blue-400 rounded-t opacity-50"><a id="default-tab" href="#list">Lista</a></li>
-        <li class="px-4 py-2 font-semibold text-gray-800 rounded-t opacity-50"><a href="#history">Historial</a></li>
-      </ul>
-
-      <!-- Tab Contents -->
-      <div id="tab-contents">
-        <!-- List tab -->
-        <div id="list" class="p-4">
-          <div class="mt-5 flex flex-col max-w-full mx-auto">
-            <div class="overflow-x-auto sm:-mx-6 lg:mx-6">
-              <div class="inline-block min-w-[640px] mx-auto py-2 sm:px-6 lg:px-8">
-                <div class="overflow-hidden">
-                  <table
-                    id="leads-table"
-                    class="display"
-                    style="width:100%;">
-                    <thead
-                      class="border-b border-neutral-200 font-medium">
-                      <tr>
-                        <th scope="col" class="px-6 py-4">Agendación</th>
-                        <th scope="col" class="px-6 py-4">Email</th>
-                        <th scope="col" class="px-6 py-4">UTM Source</th>
-                        <th scope="col" class="px-6 py-4">UTM Campaign</th>
-                        <th scope="col" class="px-6 py-4">UTM Medium</th>
-                        <th scope="col" class="px-6 py-4">UTM Term</th>
-                        <th scope="col" class="px-6 py-4">UTM Content</th>
-                        <th scope="col" class="px-6 py-4">Closer</th>
-                        <th scope="col" class="px-6 py-4">Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                  </table>
                 </div>
-              </div>
+                
+                <div id="detail-view" class="col-span-4 p-3" tabindex="1">
+                    <h2 id="lead-name" class="text-3xl font-bold my-5 ml-5">Seleccione un Lead</h2>
+
+                    <input type="hidden" id="rowId" value="" />
+                    
+                    <div class="border rounded-md p-3">
+                        <!-- Row 1 -->
+                        <div class="w-full mb-8">
+                            <div class="grid grid-cols-4 gap-1">
+                                <div class="flex items-center">  <!-- Grid cell -->
+                                    <label class="text-gray-500 text-sm font-bold mb-1 md:mb-0 mr-2 whitespace-nowrap" for="inline-full-name">Closer (Usuario)</label>
+                                </div>
+                                <div class="flex items-center col-span-3">  <!-- Grid cell -->
+                                    <span id="closer-icon" class="rounded-full bg-orange-500 px-2 py-0.5 text-white text-sm mr-2"></span>
+                                    <span id="closer-name" class="text-sm"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2 -->
+                        <div class="w-full mb-8">
+                            <div class="grid grid-cols-4 gap-1">
+                                <div class="flex items-center">  <!-- Grid cell -->
+                                    <label class="text-gray-500 font-bold text-sm mb-1 md:mb-0 mr-2 whitespace-nowrap" for="inline-schedule-date">Fecha de Agendación</label>
+                                </div>
+                                <div class="flex items-center col-span-3">  <!-- Grid cell -->
+                                    <span id="schedule-date" class="text-sm"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3 -->
+                        <div class="w-full mb-8">
+                            <div class="grid grid-cols-4 gap-1">
+    
+                              <div class="flex items-center">
+                                  <label class="text-gray-500 font-bold text-sm mb-1 md:mb-0 mr-2 whitespace-nowrap" for="inline-full-name">Estado</label>
+                              </div>
+
+                              <div id="dropdown-status" class="flex items-center col-span-3 text-sm">
+                                  <div class="relative w-full">
+                                      <button class="dropdown-button flex items-center h-8 pl-3 pr-2 border border-gray rounded focus:outline-none w-full disabled:cursor-not-allowed cursor-pointer">
+                                          <span class="selected-dropdown text-sm leading-none w-full text-left">
+                                              <div class="chip relative grid select-none items-center whitespace-nowrap rounded-full py-1 px-3 w-max font-bold text-white">
+                                                  <span class="selected-dropdown-text">&nbsp;</span>
+                                              </div>
+                                          </span>
+                                          <svg class="w-4 h-4 mt-px ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                          </svg>
+                                      </button>
+                                      <div id="status-dropdown-options" class="dropdown-options z-10 absolute flex flex-col w-full border border-gray rounded-b shadow-lg bg-white">
+                                          <div class="dropdown-option cursor-pointer hover:bg-[#ebebeb]" data-key="">
+                                              <div class="relative grid select-none items-center whitespace-nowrap rounded-full py-1 px-3 font-bold text-white cursor-pointer">
+                                                  <span>&nbsp;</span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+
+                        <!-- Row 4 -->
+                        <div class="w-full mb-8">
+                            <div class="grid grid-cols-4 gap-1">
+    
+                              <div class="flex items-center">
+                                  <label class="text-gray-500 font-bold text-sm mb-1 md:mb-0 mr-2 whitespace-nowrap" for="inline-full-name">Llamada Realizada</label>
+                              </div>
+
+                              <div id="dropdown-llamada" class="flex items-center col-span-3 text-sm">
+                                  <div class="relative w-full">
+                                      <button class="dropdown-button flex items-center h-8 pl-3 pr-2 border border-gray rounded focus:outline-none w-full disabled:cursor-not-allowed cursor-pointer">
+                                          <span class="selected-dropdown text-sm leading-none w-full text-left">
+                                              <div class="chip relative grid select-none items-center whitespace-nowrap rounded-full py-1 px-3 w-max font-bold text-white">
+                                                  <span class="selected-dropdown-text">&nbsp;</span>
+                                              </div>
+                                          </span>
+                                          <svg class="w-4 h-4 mt-px ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                          </svg>
+                                      </button>
+                                      <div class="dropdown-options z-10 absolute flex flex-col w-full border border-gray rounded-b shadow-lg bg-white">
+                                          <div class="dropdown-option cursor-pointer hover:bg-[#ebebeb]" data-column="Llamada realizada" data-key="No">
+                                              <div class="relative grid select-none items-center whitespace-nowrap rounded-full bg-[#8e0306] py-0.5 px-3 m-1 w-max font-bold text-white">
+                                                  <span>No</span>
+                                              </div>
+                                          </div>
+                                          <div class="dropdown-option cursor-pointer hover:bg-[#ebebeb]" data-column="Llamada realizada" data-key="Si">
+                                              <div class="relative grid select-none items-center whitespace-nowrap rounded-full bg-[#038e06] py-0.5 px-3 m-1 w-max font-bold text-white">
+                                                  <span>Si</span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div id="sendingFormLoader" class="mt-5">
+                        <p class="mt-5 text-center">
+                          Actualizando...<br>
+                        </p>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
 
-        <!-- History tab -->
-        <div id="history" class="hidden p-4">
-          <div class="mt-5 flex flex-col max-w-[960px] mx-auto">
-            <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div class="inline-block min-w-[960px] mx-auto py-2 sm:px-6 lg:px-8">
-                <div class="overflow-hidden">
-                  <table
-                    id="history-table"
-                    class="display"
-                    style="width:100%;">
-                    <thead
-                      class="border-b border-neutral-200 font-medium">
-                      <tr>
-                        <th scope="col" class="px-6 py-4">Email</th>
-                        <th scope="col" class="px-6 py-4">Estado</th>
-                        <th scope="col" class="px-6 py-4">Fecha Hora</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp,container-queries"></script>
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 
-      <div id="listaLoader">
-          <p class="mt-5 text-center">
-            Cargando lista.<br>
-            Esto puede demorar unos segundos...
-          </p>
-      </div>
-    </div>
+        <?!= include('InitUI.js'); ?>
 
-    <?!= include('UpdateStatusModal'); ?>
-    
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-    
-    <?!= include('InitUi.js'); ?>
-
-    <?!= include('Actions.js'); ?>
-  </body>
+        <?!= include('Actions.js'); ?>
+    </body>
 </html>
